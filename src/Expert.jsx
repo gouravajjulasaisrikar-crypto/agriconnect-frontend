@@ -1,51 +1,126 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-function Expert() {
-  const navigate = useNavigate();
-  const [post, setPost] = useState("");
-  const [posts, setPosts] = useState([]);
+export default function Expert() {
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState({});
+  const [activeTab, setActiveTab] = useState("questions");
 
-  const addPost = () => {
-    if (post !== "") {
-      setPosts([...posts, post]);
-      setPost("");
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [content, setContent] = useState("");
+
+  useEffect(() => {
+    const storedQ = JSON.parse(localStorage.getItem("questions")) || [];
+    setQuestions(storedQ);
+  }, []);
+
+  const handleAnswer = (id) => {
+    const updated = questions.map((q) =>
+      q.id === id ? { ...q, answer: answers[id] } : q
+    );
+
+    setQuestions(updated);
+    localStorage.setItem("questions", JSON.stringify(updated));
+  };
+
+  const publishArticle = () => {
+    if (!title || !category || !content) {
+      alert("Fill all fields");
+      return;
     }
+
+    const articles = JSON.parse(localStorage.getItem("articles")) || [];
+
+    const newArticle = {
+      id: Date.now(),
+      title,
+      category,
+      content
+    };
+
+    const updated = [newArticle, ...articles];
+
+    localStorage.setItem("articles", JSON.stringify(updated));
+
+    setTitle("");
+    setCategory("");
+    setContent("");
+
+    alert("Article Published!");
   };
 
   return (
-    <>
-      <div className="navbar">
-        <button onClick={() => navigate("/")}>Home</button>
+    <div className="farmer-page">
+
+      <div className="farmer-header" style={{ background: "#2563eb" }}>
+        <h1>Expert Dashboard</h1>
       </div>
 
-      <div className="container">
-        <h2 className="title">Expert Dashboard</h2>
+      {/* TABS */}
+      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+        <button onClick={() => setActiveTab("questions")}>Questions</button>
+        <button onClick={() => setActiveTab("contribute")}>Contribute</button>
+      </div>
 
-        <div className="card">
+      {/* QUESTIONS TAB */}
+      {activeTab === "questions" && (
+        <div>
+          <h2>Farmer Questions</h2>
+
+          {questions.map((q) => (
+            <div key={q.id} className="question-card">
+              <h4>{q.question}</h4>
+              <p>{q.category}</p>
+
+              <input
+                placeholder="Write answer..."
+                onChange={(e) =>
+                  setAnswers({ ...answers, [q.id]: e.target.value })
+                }
+              />
+
+              <button onClick={() => handleAnswer(q.id)}>
+                Answer
+              </button>
+
+              {q.answer && (
+                <p style={{ color: "green" }}>{q.answer}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* CONTRIBUTE TAB */}
+      {activeTab === "contribute" && (
+        <div className="question-box">
+          <h2>Publish Article</h2>
+
           <input
-            type="text"
-            placeholder="Write educational content"
-            value={post}
-            onChange={(e) => setPost(e.target.value)}
-            style={{ padding: "8px", width: "80%" }}
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
 
-          <br /><br />
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">Select Category</option>
+            <option>Crop</option>
+            <option>Technology</option>
+            <option>Market</option>
+          </select>
 
-          <button className="btn" onClick={addPost}>
-            Post
-          </button>
+          <textarea
+            placeholder="Write content..."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
 
-          <ul style={{ marginTop: "20px" }}>
-            {posts.map((p, index) => (
-              <li key={index}>{p}</li>
-            ))}
-          </ul>
+          <button onClick={publishArticle}>Publish</button>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
-
-export default Expert;

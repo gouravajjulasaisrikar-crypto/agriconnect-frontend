@@ -1,32 +1,42 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
-  const navigate = useNavigate();
+export default function Login() {
+  const nav = useNavigate();
+
+  const [user, setUser] = useState("");
+  const [pass, setPass] = useState("");
+
+  const handleLogin = () => {
+    if (!user || !pass) {
+      alert("Enter username and password");
+      return;
+    }
+    nav("/home");
+  };
 
   return (
-    <div className="container">
-      <h1 className="title">AgriConnect</h1>
-      <h3 className="subtitle">Select Your Role</h3>
+    <div className="login-container">
+      <div className="login-card">
+        <h1>AgriConnect</h1>
+        <p className="login-subtitle">
+          Secure access to the agriculture platform
+        </p>
 
-      <div className="card">
-        <button className="btn" onClick={() => navigate("/farmer")}>
-          Farmer
-        </button>
+        <input
+          type="text"
+          placeholder="Username"
+          onChange={(e) => setUser(e.target.value)}
+        />
 
-        <button className="btn" onClick={() => navigate("/expert")}>
-          Expert
-        </button>
+        <input
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setPass(e.target.value)}
+        />
 
-        <button className="btn" onClick={() => navigate("/admin")}>
-          Admin
-        </button>
-
-        <button className="btn" onClick={() => navigate("/public")}>
-          Public
-        </button>
+        <button onClick={handleLogin}>Login</button>
       </div>
     </div>
   );
 }
-
-export default Login;
