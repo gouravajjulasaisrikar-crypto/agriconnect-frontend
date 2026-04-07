@@ -6,16 +6,16 @@ export default function Farmer() {
   const [questions, setQuestions] = useState([]);
   const [articles, setArticles] = useState([]);
 
-  // GET questions from backend
+  // GET questions
   useEffect(() => {
-    fetch("http://localhost:8080/questions")
+    fetch("https://agriconnect-backend-production.up.railway.app/questions")
       .then(res => res.json())
       .then(data => setQuestions(data))
       .catch(err => console.log(err));
   }, []);
 
-  // POST question to backend
-  const handleSubmit = () => {
+  // POST question
+  const handleSubmit = async () => {
     if (!question || !category) {
       alert("Fill all fields");
       return;
@@ -27,32 +27,42 @@ export default function Farmer() {
       author: "Farmer"
     };
 
-    fetch("http://localhost:8080/questions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(newQuestion)
-    })
-      .then(res => res.json())
-      .then(data => {
-        setQuestions([data, ...questions]);
-        setQuestion("");
-        setCategory("");
-      })
-      .catch(err => console.log(err));
+    try {
+      const res = await fetch(
+        "https://agriconnect-backend-production.up.railway.app/questions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(newQuestion)
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed");
+
+      const data = await res.json();
+
+      setQuestions((prev) => [data, ...prev]);
+
+      setQuestion("");
+      setCategory("");
+
+      alert("Submitted successfully");
+    } catch (err) {
+      console.log(err);
+      alert("Backend connection error");
+    }
   };
 
   return (
     <div className="farmer-page">
 
-      {/* HEADER */}
       <div className="farmer-header">
         <h1>Welcome Farmer</h1>
         <p>Ask questions and explore expert knowledge</p>
       </div>
 
-      {/* ASK QUESTION */}
       <div className="question-box">
         <h2>Ask a Question</h2>
 
@@ -75,7 +85,6 @@ export default function Farmer() {
         <button onClick={handleSubmit}>Submit Question</button>
       </div>
 
-      {/* QUESTIONS */}
       <div className="questions-list">
         <h2>Your Questions</h2>
 
@@ -88,7 +97,6 @@ export default function Farmer() {
         ))}
       </div>
 
-      {/* ARTICLES (optional) */}
       <div className="questions-list">
         <h2>Expert Articles</h2>
 
