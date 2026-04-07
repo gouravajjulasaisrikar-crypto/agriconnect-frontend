@@ -9,9 +9,9 @@ export default function Farmer() {
   // GET questions
   useEffect(() => {
     fetch("https://agriconnect-backend-production.up.railway.app/questions")
-      .then(res => res.json())
-      .then(data => setQuestions(data))
-      .catch(err => console.log(err));
+      .then((res) => res.json())
+      .then((data) => setQuestions(data))
+      .catch((err) => console.log(err));
   }, []);
 
   // POST question
@@ -24,7 +24,7 @@ export default function Farmer() {
     const newQuestion = {
       title: question,
       category: category,
-      author: "Farmer"
+      author: "Farmer",
     };
 
     try {
@@ -32,10 +32,11 @@ export default function Farmer() {
         "https://agriconnect-backend-production.up.railway.app/questions",
         {
           method: "POST",
+          mode: "cors",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(newQuestion)
+          body: JSON.stringify(newQuestion),
         }
       );
 
@@ -51,13 +52,12 @@ export default function Farmer() {
       alert("Submitted successfully");
     } catch (err) {
       console.log(err);
-      alert("Backend connection error");
+      alert("Error connecting to backend");
     }
   };
 
   return (
     <div className="farmer-page">
-
       <div className="farmer-header">
         <h1>Welcome Farmer</h1>
         <p>Ask questions and explore expert knowledge</p>
@@ -108,7 +108,6 @@ export default function Farmer() {
           </div>
         ))}
       </div>
-
     </div>
   );
 }
