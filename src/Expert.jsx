@@ -2,26 +2,19 @@ import { useState, useEffect } from "react";
 
 export default function Expert() {
   const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState({});
   const [activeTab, setActiveTab] = useState("questions");
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [content, setContent] = useState("");
 
+  // GET questions from backend
   useEffect(() => {
-    const storedQ = JSON.parse(localStorage.getItem("questions")) || [];
-    setQuestions(storedQ);
+    fetch("https://agriconnect-backend-production.up.railway.app/questions")
+      .then(res => res.json())
+      .then(data => setQuestions(data))
+      .catch(err => console.log(err));
   }, []);
-
-  const handleAnswer = (id) => {
-    const updated = questions.map((q) =>
-      q.id === id ? { ...q, answer: answers[id] } : q
-    );
-
-    setQuestions(updated);
-    localStorage.setItem("questions", JSON.stringify(updated));
-  };
 
   const publishArticle = () => {
     if (!title || !category || !content) {
@@ -29,24 +22,11 @@ export default function Expert() {
       return;
     }
 
-    const articles = JSON.parse(localStorage.getItem("articles")) || [];
-
-    const newArticle = {
-      id: Date.now(),
-      title,
-      category,
-      content
-    };
-
-    const updated = [newArticle, ...articles];
-
-    localStorage.setItem("articles", JSON.stringify(updated));
+    alert("Article Published (UI only)");
 
     setTitle("");
     setCategory("");
     setContent("");
-
-    alert("Article Published!");
   };
 
   return (
@@ -67,25 +47,11 @@ export default function Expert() {
         <div>
           <h2>Farmer Questions</h2>
 
-          {questions.map((q) => (
-            <div key={q.id} className="question-card">
-              <h4>{q.question}</h4>
+          {questions.map((q, index) => (
+            <div key={index} className="question-card">
+              <h4>{q.title}</h4>
               <p>{q.category}</p>
-
-              <input
-                placeholder="Write answer..."
-                onChange={(e) =>
-                  setAnswers({ ...answers, [q.id]: e.target.value })
-                }
-              />
-
-              <button onClick={() => handleAnswer(q.id)}>
-                Answer
-              </button>
-
-              {q.answer && (
-                <p style={{ color: "green" }}>{q.answer}</p>
-              )}
+              <p>{q.author}</p>
             </div>
           ))}
         </div>
