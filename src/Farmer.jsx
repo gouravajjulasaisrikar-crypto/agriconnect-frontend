@@ -6,16 +6,15 @@ export default function Farmer() {
   const [questions, setQuestions] = useState([]);
   const [articles, setArticles] = useState([]);
 
-  // Load stored data
+  // GET questions from backend
   useEffect(() => {
-    const storedQ = JSON.parse(localStorage.getItem("questions")) || [];
-    const storedA = JSON.parse(localStorage.getItem("articles")) || [];
-
-    setQuestions(storedQ);
-    setArticles(storedA);
+    fetch("http://localhost:8080/questions")
+      .then(res => res.json())
+      .then(data => setQuestions(data))
+      .catch(err => console.log(err));
   }, []);
 
-  // Ask Question
+  // POST question to backend
   const handleSubmit = () => {
     if (!question || !category) {
       alert("Fill all fields");
@@ -23,19 +22,25 @@ export default function Farmer() {
     }
 
     const newQuestion = {
-      id: Date.now(),
-      question,
-      category,
-      answer: ""
+      title: question,
+      category: category,
+      author: "Farmer"
     };
 
-    const updated = [newQuestion, ...questions];
-
-    setQuestions(updated);
-    localStorage.setItem("questions", JSON.stringify(updated));
-
-    setQuestion("");
-    setCategory("");
+    fetch("http://localhost:8080/questions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newQuestion)
+    })
+      .then(res => res.json())
+      .then(data => {
+        setQuestions([data, ...questions]);
+        setQuestion("");
+        setCategory("");
+      })
+      .catch(err => console.log(err));
   };
 
   return (
@@ -74,25 +79,16 @@ export default function Farmer() {
       <div className="questions-list">
         <h2>Your Questions</h2>
 
-        {questions.map((q) => (
-          <div key={q.id} className="question-card">
-            <h4>{q.question}</h4>
+        {questions.map((q, index) => (
+          <div key={index} className="question-card">
+            <h4>{q.title}</h4>
             <p>{q.category}</p>
-
-            {q.answer ? (
-              <p style={{ color: "green" }}>
-                Answer: {q.answer}
-              </p>
-            ) : (
-              <p style={{ color: "gray" }}>
-                Waiting for expert answer...
-              </p>
-            )}
+            <p>{q.author}</p>
           </div>
         ))}
       </div>
 
-      {/* ARTICLES */}
+      {/* ARTICLES (optional) */}
       <div className="questions-list">
         <h2>Expert Articles</h2>
 
