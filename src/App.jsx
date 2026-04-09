@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./Login";
+import Signup from "./Signup";
 import Home from "./Home";
 import Farmer from "./Farmer";
 import Expert from "./Expert";
@@ -11,6 +12,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<Home />} />
         <Route path="/farmer" element={<Farmer />} />
         <Route path="/expert" element={<Expert />} />

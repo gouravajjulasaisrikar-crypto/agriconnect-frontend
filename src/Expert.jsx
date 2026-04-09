@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 export default function Expert() {
   const [questions, setQuestions] = useState([]);
   const [activeTab, setActiveTab] = useState("questions");
+  const [answers, setAnswers] = useState({});
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
@@ -10,23 +11,56 @@ export default function Expert() {
 
   // GET questions from backend
   useEffect(() => {
-    fetch("https://agriconnect-backend-production.up.railway.app/questions")
+    fetch("http://localhost:8080/questions")
       .then(res => res.json())
       .then(data => setQuestions(data))
       .catch(err => console.log(err));
   }, []);
 
-  const publishArticle = () => {
+  const submitAnswer = async (id) => {
+    const ans = answers[id];
+    if (!ans) return alert("Write an answer first");
+    
+    try {
+      const res = await fetch(`http://localhost:8080/questions/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answer: ans })
+      });
+      
+      if (res.ok) {
+        alert("Answer submitted successfully!");
+        setQuestions(questions.map(q => q.id === id ? { ...q, answer: ans } : q));
+      }
+    } catch (e) {
+      console.log(e);
+      alert("Failed to connect to backend");
+    }
+  };
+
+  const publishArticle = async () => {
     if (!title || !category || !content) {
       alert("Fill all fields");
       return;
     }
 
-    alert("Article Published (UI only)");
-
-    setTitle("");
-    setCategory("");
-    setContent("");
+    try {
+      const res = await fetch("http://localhost:8080/articles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, category, content })
+      });
+      
+      if (res.ok) {
+        alert("Article Published to Database!");
+        setTitle("");
+        setCategory("");
+        setContent("");
+      }
+    } catch (e) {
+      console.log(e);
+      alert("Error connecting to backend");
+    }
   };
 
   return (
@@ -47,11 +81,28 @@ export default function Expert() {
         <div>
           <h2>Farmer Questions</h2>
 
-          {questions.map((q, index) => (
-            <div key={index} className="question-card">
+          {questions.map((q) => (
+            <div key={q.id} className="question-card">
               <h4>{q.title}</h4>
-              <p>{q.category}</p>
-              <p>{q.author}</p>
+              <p><strong>Category:</strong> {q.category}</p>
+              <p><strong>Author:</strong> {q.author}</p>
+              
+              {q.answer ? (
+                <div style={{ marginTop: "15px", padding: "10px", backgroundColor: "#e0f2fe", borderRadius: "8px" }}>
+                  <strong>Your Answer:</strong> {q.answer}
+                </div>
+              ) : (
+                <div style={{ marginTop: "15px" }}>
+                  <input
+                    type="text"
+                    placeholder="Type your expert answer..."
+                    value={answers[q.id] || ""}
+                    onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
+                    style={{ width: "70%", padding: "8px", marginRight: "10px" }}
+                  />
+                  <button onClick={() => submitAnswer(q.id)}>Submit Answer</button>
+                </div>
+              )}
             </div>
           ))}
         </div>

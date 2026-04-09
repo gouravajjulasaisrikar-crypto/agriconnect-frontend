@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function PublicPage() {
   const [articles, setArticles] = useState([]);
+  const nav = useNavigate();
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("articles")) || [];
-    setArticles(stored);
+    fetch("http://localhost:8080/articles")
+      .then(res => res.json())
+      .then(data => setArticles(data))
+      .catch(err => console.log(err));
   }, []);
 
   return (
@@ -90,8 +94,8 @@ export default function PublicPage() {
       {/* CTA */}
       <div className="cta">
         <h2>Get Involved</h2>
-        <button>Join as Farmer</button>
-        <button className="secondary">Become Expert</button>
+        <button onClick={() => nav("/signup")}>Join as Farmer</button>
+        <button className="secondary" onClick={() => nav("/signup")}>Become Expert</button>
       </div>
 
     </div>

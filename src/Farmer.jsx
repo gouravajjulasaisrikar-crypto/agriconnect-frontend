@@ -6,9 +6,8 @@ export default function Farmer() {
   const [questions, setQuestions] = useState([]);
   const [articles, setArticles] = useState([]);
 
-  // GET questions
   useEffect(() => {
-    fetch("https://agriconnect-backend-production.up.railway.app/questions")
+    fetch("http://localhost:8080/questions")
       .then((res) => res.json())
       .then((data) => setQuestions(data))
       .catch((err) => console.log(err));
@@ -29,7 +28,7 @@ export default function Farmer() {
 
     try {
       const res = await fetch(
-        "https://agriconnect-backend-production.up.railway.app/questions",
+        "http://localhost:8080/questions",
         {
           method: "POST",
           mode: "cors",
@@ -88,11 +87,17 @@ export default function Farmer() {
       <div className="questions-list">
         <h2>Your Questions</h2>
 
-        {questions.map((q, index) => (
-          <div key={index} className="question-card">
+        {questions.map((q) => (
+          <div key={q.id || q.title} className="question-card">
             <h4>{q.title}</h4>
-            <p>{q.category}</p>
-            <p>{q.author}</p>
+            <p><strong>Category:</strong> {q.category}</p>
+            <p><strong>Author:</strong> {q.author}</p>
+            
+            {q.answer && (
+              <div style={{ marginTop: "15px", padding: "10px", backgroundColor: "#e0f2fe", borderLeft: "4px solid #0284c7" }}>
+                <strong>Expert Answer:</strong> {q.answer}
+              </div>
+            )}
           </div>
         ))}
       </div>

@@ -6,13 +6,31 @@ export default function Login() {
 
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!user || !pass) {
-      alert("Enter username and password");
+      setErrorMsg("Please enter username and password.");
       return;
     }
-    nav("/home");
+
+    try {
+      const res = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user, password: pass })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setErrorMsg("");
+        nav("/home");
+      } else {
+        setErrorMsg("Invalid username or password.");
+      }
+    } catch (e) {
+      setErrorMsg("Error connecting to backend.");
+    }
   };
 
   return (
@@ -22,6 +40,8 @@ export default function Login() {
         <p className="login-subtitle">
           Secure access to the agriculture platform
         </p>
+
+        {errorMsg && <p className="error-text">{errorMsg}</p>}
 
         <input
           type="text"
@@ -36,6 +56,10 @@ export default function Login() {
         />
 
         <button onClick={handleLogin}>Login</button>
+
+        <p style={{ marginTop: "20px", fontSize: "14px", cursor: "pointer", color: "#16a34a", fontWeight: "600" }} onClick={() => nav("/signup")}>
+          Don't have an account? Sign up here
+        </p>
       </div>
     </div>
   );
