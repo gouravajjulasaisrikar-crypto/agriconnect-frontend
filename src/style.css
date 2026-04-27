@@ -18,6 +18,18 @@ button:hover {
   box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
 }
 
+button:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 2px 5px rgba(22, 163, 74, 0.2);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  transition: all 0.2s ease;
+}
+
 /* CARDS ANIMATION */
 .card, .question-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;

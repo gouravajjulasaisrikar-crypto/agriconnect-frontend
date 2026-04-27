@@ -5,12 +5,13 @@ export default function Signup() {
   const nav = useNavigate();
 
   const [user, setUser] = useState("");
+  const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [role, setRole] = useState("farmer"); // default
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleSignup = async () => {
-    if (!user || !pass) {
+    if (!user || !email || !pass) {
       setErrorMsg("Please fill all fields.");
       return;
     }
@@ -19,7 +20,7 @@ export default function Signup() {
       const res = await fetch("http://localhost:8080/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: user, password: pass, role: role })
+        body: JSON.stringify({ username: user, email: email, password: pass, role: role })
       });
 
       if (res.ok) {
@@ -45,6 +46,12 @@ export default function Signup() {
           type="text"
           placeholder="Username"
           onChange={(e) => setUser(e.target.value)}
+        />
+
+        <input
+          type="email"
+          placeholder="Email Address"
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input

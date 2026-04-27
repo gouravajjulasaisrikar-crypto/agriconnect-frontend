@@ -8,6 +8,10 @@ export default function Login() {
   const [pass, setPass] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
+  const [showOtp, setShowOtp] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [emailHint, setEmailHint] = useState("");
+
   const handleLogin = async () => {
     if (!user || !pass) {
       setErrorMsg("Please enter username and password.");
@@ -23,8 +27,11 @@ export default function Login() {
 
       if (res.ok) {
         const data = await res.json();
-        setErrorMsg("");
-        nav("/home");
+        if (data.status === "OTP_SENT") {
+           setShowOtp(true);
+           setEmailHint(data.email);
+           setErrorMsg("");
+        }
       } else {
         setErrorMsg("Invalid username or password.");
       }
@@ -33,29 +40,64 @@ export default function Login() {
     }
   };
 
+  const handleVerifyOtp = async () => {
+     try {
+       const res = await fetch("http://localhost:8080/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: user, otp: otp })
+       });
+       
+       if (res.ok) {
+          const data = await res.json();
+          // SESSION MANAGER LOGIC
+          sessionStorage.setItem("user", JSON.stringify(data));
+          
+          setErrorMsg("");
+          if (data.role === "admin") nav("/admin");
+          else nav("/home");
+       } else {
+          setErrorMsg("Invalid OTP Code.");
+       }
+     } catch (e) {
+        setErrorMsg("Verification Error.");
+     }
+  };
+
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1>AgriConnect</h1>
+        <h1>AgriConnect Security</h1>
         <p className="login-subtitle">
-          Secure access to the agriculture platform
+          {showOtp ? `An OTP has been sent to ${emailHint}` : "Enter credentials to access platform"}
         </p>
 
         {errorMsg && <p className="error-text">{errorMsg}</p>}
 
-        <input
-          type="text"
-          placeholder="Username"
-          onChange={(e) => setUser(e.target.value)}
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPass(e.target.value)}
-        />
-
-        <button onClick={handleLogin}>Login</button>
+        {!showOtp ? (
+          <>
+            <input
+              type="text"
+              placeholder="Username"
+              onChange={(e) => setUser(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              onChange={(e) => setPass(e.target.value)}
+            />
+            <button onClick={handleLogin}>Login</button>
+          </>
+        ) : (
+          <>
+            <input
+              type="text"
+              placeholder="Enter 6-Digit OTP"
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <button style={{background: "#0284c7"}} onClick={handleVerifyOtp}>Verify Session</button>
+          </>
+        )}
 
         <p style={{ marginTop: "20px", fontSize: "14px", cursor: "pointer", color: "#16a34a", fontWeight: "600" }} onClick={() => nav("/signup")}>
           Don't have an account? Sign up here
