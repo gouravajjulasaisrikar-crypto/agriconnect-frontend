@@ -19,7 +19,7 @@ export default function Login() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/login", {
+      const res = await fetch("https://agriconnect-backend-production.up.railway.app/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user, password: pass })
@@ -42,7 +42,7 @@ export default function Login() {
 
   const handleVerifyOtp = async () => {
      try {
-       const res = await fetch("http://localhost:8080/verify-otp", {
+       const res = await fetch("https://agriconnect-backend-production.up.railway.app/verify-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username: user, otp: otp })

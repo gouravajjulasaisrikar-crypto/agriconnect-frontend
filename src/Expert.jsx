@@ -11,7 +11,7 @@ export default function Expert() {
 
   // GET questions from backend
   useEffect(() => {
-    fetch("http://localhost:8080/questions")
+    fetch("https://agriconnect-backend-production.up.railway.app/questions")
       .then(res => res.json())
       .then(data => setQuestions(data))
       .catch(err => console.log(err));
@@ -22,7 +22,7 @@ export default function Expert() {
     if (!ans) return alert("Write an answer first");
     
     try {
-      const res = await fetch(`http://localhost:8080/questions/${id}`, {
+      const res = await fetch(`https://agriconnect-backend-production.up.railway.app/questions/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answer: ans })
@@ -45,7 +45,7 @@ export default function Expert() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/articles", {
+      const res = await fetch("https://agriconnect-backend-production.up.railway.app/articles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, category, content })

@@ -17,7 +17,7 @@ export default function Signup() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/signup", {
+      const res = await fetch("https://agriconnect-backend-production.up.railway.app/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user, email: email, password: pass, role: role })

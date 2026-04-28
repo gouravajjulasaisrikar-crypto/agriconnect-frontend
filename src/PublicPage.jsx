@@ -6,7 +6,7 @@ export default function PublicPage() {
   const nav = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:8080/articles")
+    fetch("https://agriconnect-backend-production.up.railway.app/articles")
       .then(res => res.json())
       .then(data => setArticles(data))
       .catch(err => console.log(err));

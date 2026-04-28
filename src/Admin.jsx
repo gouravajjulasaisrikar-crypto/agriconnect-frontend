@@ -9,13 +9,13 @@ export default function Admin() {
 
   const loadData = async () => {
     try {
-      const uRes = await fetch("http://localhost:8080/users");
+      const uRes = await fetch("https://agriconnect-backend-production.up.railway.app/users");
       setUsers(await uRes.json());
       
-      const aRes = await fetch("http://localhost:8080/articles");
+      const aRes = await fetch("https://agriconnect-backend-production.up.railway.app/articles");
       setArticles(await aRes.json());
       
-      const qRes = await fetch("http://localhost:8080/questions");
+      const qRes = await fetch("https://agriconnect-backend-production.up.railway.app/questions");
       setQuestions(await qRes.json());
     } catch (e) {
       console.log(e);
@@ -29,7 +29,7 @@ export default function Admin() {
   const deleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to permanently delete this user?")) return;
     try {
-      await fetch(`http://localhost:8080/users/${id}`, { method: "DELETE" });
+      await fetch(`https://agriconnect-backend-production.up.railway.app/users/${id}`, { method: "DELETE" });
       loadData();
     } catch (e) {
       console.log("Error deleting user");
@@ -39,7 +39,7 @@ export default function Admin() {
   const deleteArticle = async (id) => {
     if (!window.confirm("Are you sure you want to permanently delete this article?")) return;
     try {
-      await fetch(`http://localhost:8080/articles/${id}`, { method: "DELETE" });
+      await fetch(`https://agriconnect-backend-production.up.railway.app/articles/${id}`, { method: "DELETE" });
       loadData();
     } catch (e) {
       console.log("Error deleting article");

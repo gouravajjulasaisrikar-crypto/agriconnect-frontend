@@ -7,7 +7,7 @@ export default function Farmer() {
   const [articles, setArticles] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/questions")
+    fetch("https://agriconnect-backend-production.up.railway.app/questions")
       .then((res) => res.json())
       .then((data) => setQuestions(data))
       .catch((err) => console.log(err));
@@ -28,7 +28,7 @@ export default function Farmer() {
 
     try {
       const res = await fetch(
-        "http://localhost:8080/questions",
+        "https://agriconnect-backend-production.up.railway.app/questions",
         {
           method: "POST",
           mode: "cors",
