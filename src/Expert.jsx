@@ -30,7 +30,10 @@ export default function Expert() {
       
       if (res.ok) {
         alert("Answer submitted successfully!");
-        setQuestions(questions.map(q => q.id === id ? { ...q, answer: ans } : q));
+        setQuestions(prev => prev.map(q => q.id === id ? { ...q, answer: ans } : q));
+      } else {
+        const errorText = await res.text();
+        alert(`Error: Backend returned ${res.status}. ${errorText}`);
       }
     } catch (e) {
       console.log(e);
